@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.jobhunter.model.User;
 import com.example.jobhunter.service.UserService;
+import com.example.jobhunter.service.error.IdInvalidException;
 
 import lombok.AllArgsConstructor;
 
@@ -35,7 +36,10 @@ public class UserController {
   }
 
   @DeleteMapping("/{id}")
-  public String deleteUser(@PathVariable Long id) {
+  public String deleteUser(@PathVariable Long id) throws IdInvalidException {
+    if (id > 1000) {
+      throw new IdInvalidException("Id quá lớn");
+    }
     userService.deleteUser(id);
     return "User deleted: ";
   }
