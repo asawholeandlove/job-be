@@ -12,8 +12,8 @@ import lombok.AllArgsConstructor;
 public class UserService {
   private final UserRepo userRepo;
 
-  public void createUser(User user) {
-    userRepo.save(user);
+  public User createUser(User user) {
+    return userRepo.save(user);
   }
 
   public void deleteUser(Long id) {
