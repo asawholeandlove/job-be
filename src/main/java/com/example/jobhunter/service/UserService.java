@@ -30,4 +30,8 @@ public class UserService {
     existingUser.setEmail(user.getEmail());
     userRepo.save(existingUser);
   }
+
+  public User getUserByEmail(String email) {
+    return userRepo.findByEmail(email);
+  }
 }
