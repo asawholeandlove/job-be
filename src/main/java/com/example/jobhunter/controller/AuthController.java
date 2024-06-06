@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.jobhunter.model.dto.LoginDTO;
+import com.example.jobhunter.model.dto.ResLoginDTO;
+import com.example.jobhunter.util.SecurityUtil;
 
 import lombok.AllArgsConstructor;
 
@@ -17,15 +19,21 @@ import lombok.AllArgsConstructor;
 public class AuthController {
 
   private final AuthenticationManagerBuilder authenticationManagerBuilder;
+  private final SecurityUtil securityUtil;
 
   @PostMapping("/login")
-  public ResponseEntity<LoginDTO> login(@RequestBody LoginDTO loginDto) {
+  public ResponseEntity<ResLoginDTO> login(@RequestBody LoginDTO loginDto) {
     // Nạp input gồm username/password vào Security
     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
         loginDto.getUsername(), loginDto.getPassword());
 
     // xác thực người dùng => cần viết hàm loadUserByUsername
     Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-    return ResponseEntity.ok().body(loginDto);
+
+    // create a token
+    String access_token = this.securityUtil.createToken(authentication);
+    ResLoginDTO res = new ResLoginDTO();
+    res.setAccessToken(access_token);
+    return ResponseEntity.ok().body(res);
   }
 }

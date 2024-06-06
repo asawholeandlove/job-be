@@ -4,17 +4,24 @@ spring:
     name: jobhunter
 
   # Cấu hình cơ sở dữ liệu
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
   datasource:
     url: jdbc:mysql://localhost:3306/jobhunter
     username: root
     password: 12345
     driver-class-name: com.mysql.cj.jdbc.Driver
-# Cấu hình tải lên tệp (được comment out để sử dụng giá trị mặc định)
-#  servlet:
-#    multipart:
-#      max-file-size: 50MB
-#      max-request-size: 50MB
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  # Cấu hình tải lên tệp (nếu cần)
+  # servlet:
+  #   multipart:
+  #     max-file-size: 50MB
+  #     max-request-size: 50MB
+
+# Cấu hình JWT
+jwt:
+  secret: ODcxODJlOGI4YTdhZWNlYzE4NmRhNzQwYzQ4ZmIxOTQzODMzZDcxOWQ2OGVlNTk5MjY0MTcxNTc3YTcyZmIzN2I0YmI4NmI1ZDU2NDU4YzUxZjI0MDMwM2E5MDI4YWUYTIyMWQ5ZDNhODBhMmNhZjFkM2VlZWRhN2Y4ZWVlOTk=
+  expiration: 86400
