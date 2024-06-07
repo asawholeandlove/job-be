@@ -1,5 +1,10 @@
 package com.example.jobhunter.controller;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,9 +15,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.jobhunter.model.User;
+import com.example.jobhunter.model.dto.ResultPaginationDTO;
 import com.example.jobhunter.service.UserService;
 import com.example.jobhunter.service.error.IdInvalidException;
 
@@ -24,6 +31,24 @@ import lombok.AllArgsConstructor;
 public class UserController {
   private final UserService userService;
   private final PasswordEncoder passwordEncoder;
+
+  @GetMapping
+  public ResponseEntity<ResultPaginationDTO> getUsers(
+      @RequestParam("current") Optional<String> currentOptional,
+      @RequestParam("pageSize") Optional<String> pageSizeOptional) {
+    String sCurrent = currentOptional.orElse("");
+    String sPageSize = pageSizeOptional.orElse("");
+
+    Pageable pageable = PageRequest.of(Integer.parseInt(sCurrent) - 1, Integer.parseInt(sPageSize));
+
+    var result = userService.getAllUsers(pageable);
+    return ResponseEntity.ok(result);
+  }
+
+  @GetMapping("/{id}")
+  public User getUserById(@PathVariable Long id) {
+    return userService.getUserById(id);
+  }
 
   @PostMapping
   public ResponseEntity<User> createUser(@RequestBody User user) {
@@ -48,15 +73,4 @@ public class UserController {
     return "User deleted: ";
   }
 
-  @GetMapping("/{id}")
-  public User getUserById(@PathVariable Long id) {
-    return userService.getUserById(id);
-  }
-
-  @GetMapping
-  public ResponseEntity<User> home() {
-    var newUser = new User();
-    newUser.setEmail("admin");
-    return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
-  }
 }
