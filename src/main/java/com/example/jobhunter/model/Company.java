@@ -2,6 +2,9 @@ package com.example.jobhunter.model;
 
 import java.time.Instant;
 
+import com.example.jobhunter.util.SecurityUtil;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,6 +35,7 @@ public class Company {
 
   private String logo;
 
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+7")
   private Instant createdAt;
 
   private Instant updatedAt;
@@ -42,7 +46,7 @@ public class Company {
 
   @PrePersist
   public void onCreate() {
-    this.createdBy = "Master";
+    this.createdBy = SecurityUtil.getCurrentUserLogin().orElse("");
     this.createdAt = Instant.now();
   }
 }
