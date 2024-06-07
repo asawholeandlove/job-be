@@ -11,13 +11,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Table(name = "companies")
 public class Company {
@@ -48,5 +51,11 @@ public class Company {
   public void onCreate() {
     this.createdBy = SecurityUtil.getCurrentUserLogin().orElse("");
     this.createdAt = Instant.now();
+  }
+
+  @PreUpdate
+  public void onUpdate() {
+    this.updatedBy = SecurityUtil.getCurrentUserLogin().orElse("");
+    this.updatedAt = Instant.now();
   }
 }

@@ -28,4 +28,17 @@ public class CompanyService {
     companyRepo.deleteById(id);
   }
 
+  public Company updateCompany(Long id, Company c) {
+    var companyOptional = this.companyRepo.findById(id);
+    if (companyOptional.isPresent()) {
+      Company currentCompany = companyOptional.get();
+      currentCompany.setLogo(c.getLogo());
+      currentCompany.setName(c.getName());
+      currentCompany.setDescription(c.getDescription());
+      currentCompany.setAddress(c.getAddress());
+      return this.companyRepo.save(currentCompany);
+    }
+    return null;
+  }
+
 }
