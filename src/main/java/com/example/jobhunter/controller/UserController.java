@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +23,7 @@ import com.example.jobhunter.model.User;
 import com.example.jobhunter.model.dto.ResultPaginationDTO;
 import com.example.jobhunter.service.UserService;
 import com.example.jobhunter.service.error.IdInvalidException;
+import com.turkraft.springfilter.boot.Filter;
 
 import lombok.AllArgsConstructor;
 
@@ -34,15 +36,10 @@ public class UserController {
 
   @GetMapping
   public ResponseEntity<ResultPaginationDTO> getUsers(
-      @RequestParam("current") Optional<String> currentOptional,
-      @RequestParam("pageSize") Optional<String> pageSizeOptional) {
-    String sCurrent = currentOptional.orElse("");
-    String sPageSize = pageSizeOptional.orElse("");
-
-    Pageable pageable = PageRequest.of(Integer.parseInt(sCurrent) - 1, Integer.parseInt(sPageSize));
-
-    var result = userService.getAllUsers(pageable);
-    return ResponseEntity.ok(result);
+      @Filter Specification<User> spec,
+      Pageable pageable) {
+    return ResponseEntity.status(HttpStatus.OK).body(
+        this.userService.getAllUsers(spec, pageable));
   }
 
   @GetMapping("/{id}")

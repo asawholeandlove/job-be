@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.example.jobhunter.model.User;
@@ -26,22 +27,20 @@ public class UserService {
     userRepo.deleteById(id);
   }
 
-  public ResultPaginationDTO getAllUsers(Pageable pageable) {
-    Page<User> pageUser = userRepo.findAll(pageable);
+  public ResultPaginationDTO getAllUsers(Specification<User> spec, Pageable pageable) {
+    Page<User> pageUser = this.userRepo.findAll(spec, pageable);
+    ResultPaginationDTO rs = new ResultPaginationDTO();
+    Meta mt = new Meta();
 
-    var meta = new Meta();
+    mt.setPage(pageable.getPageNumber() + 1);
+    mt.setPageSize(pageable.getPageSize());
 
-    meta.setPage(pageUser.getNumber() + 1);
-    meta.setPageSize(pageUser.getSize());
-    meta.setPages(pageUser.getTotalPages());
-    meta.setTotal(pageUser.getTotalElements());
+    mt.setPages(pageUser.getTotalPages());
+    mt.setTotal(pageUser.getTotalElements());
 
-    ResultPaginationDTO resultPaginationDTO = new ResultPaginationDTO();
-
-    resultPaginationDTO.setMeta(meta);
-    resultPaginationDTO.setResult(pageUser.getContent());
-
-    return resultPaginationDTO;
+    rs.setMeta(mt);
+    rs.setResult(pageUser.getContent());
+    return rs;
   }
 
   public User getUserById(Long id) {

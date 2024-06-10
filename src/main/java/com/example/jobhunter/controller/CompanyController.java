@@ -2,6 +2,7 @@ package com.example.jobhunter.controller;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.jobhunter.model.Company;
 import com.example.jobhunter.model.dto.ResultPaginationDTO;
 import com.example.jobhunter.service.CompanyService;
+import com.turkraft.springfilter.boot.Filter;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -32,15 +34,8 @@ public class CompanyController {
 
   // Get all companies
   @GetMapping
-  public ResponseEntity<ResultPaginationDTO> getCompanies(@RequestParam("current") Optional<String> currentOptional,
-      @RequestParam("pageSize") Optional<String> pageSizeOptional) {
-    String sCurrent = currentOptional.orElse("");
-    String sPageSize = pageSizeOptional.orElse("");
-
-    Pageable pageable = PageRequest.of(Integer.parseInt(sCurrent) - 1, Integer.parseInt(sPageSize));
-
-    var result = companyService.getCompanies(pageable);
-    return ResponseEntity.ok(result);
+  public ResponseEntity<ResultPaginationDTO> getCompanies(@Filter Specification<Company> spec, Pageable pageable) {
+    return ResponseEntity.ok(this.companyService.getCompanies(spec, pageable));
   }
 
   // Create a new company

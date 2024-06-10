@@ -15,6 +15,11 @@ spring:
       ddl-auto: update
     show-sql: true
 
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+
   # Cấu hình tải lên tệp (nếu cần)
   # servlet:
   #   multipart:

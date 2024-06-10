@@ -2,6 +2,7 @@ package com.example.jobhunter.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.example.jobhunter.model.Company;
@@ -20,22 +21,20 @@ public class CompanyService {
   private final CompanyRepo companyRepo;
 
   // Get all companies with pagination
-  public ResultPaginationDTO getCompanies(Pageable pageable) {
-    Page<Company> pageCompany = companyRepo.findAll(pageable);
+  public ResultPaginationDTO getCompanies(Specification<Company> spec, Pageable pageable) {
+    Page<Company> pCompany = this.companyRepo.findAll(spec, pageable);
+    ResultPaginationDTO rs = new ResultPaginationDTO();
+    Meta mt = new Meta();
 
-    var meta = new Meta();
+    mt.setPage(pageable.getPageNumber() + 1);
+    mt.setPageSize(pageable.getPageSize());
 
-    meta.setPage(pageCompany.getNumber() + 1);
-    meta.setPageSize(pageCompany.getSize());
-    meta.setPages(pageCompany.getTotalPages());
-    meta.setTotal(pageCompany.getTotalElements());
+    mt.setPages(pCompany.getTotalPages());
+    mt.setTotal(pCompany.getTotalElements());
 
-    ResultPaginationDTO resultPaginationDTO = new ResultPaginationDTO();
-
-    resultPaginationDTO.setMeta(meta);
-    resultPaginationDTO.setResult(pageCompany.getContent());
-
-    return resultPaginationDTO;
+    rs.setMeta(mt);
+    rs.setResult(pCompany.getContent());
+    return rs;
 
   }
 
