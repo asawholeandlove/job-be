@@ -10,18 +10,30 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import com.example.jobhunter.model.RestResponse;
+import com.example.jobhunter.util.annotation.ApiMessage;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @ControllerAdvice
 public class FormatRestResponse implements ResponseBodyAdvice<Object> {
 
   @Override
-  @Nullable
-  public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
-      Class selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
-    var servletResponse = ((ServletServerHttpResponse) response).getServletResponse();
-    var status = servletResponse.getStatus();
+  public boolean supports(MethodParameter returnType, Class converterType) {
+    return true;
+  }
 
-    var res = new RestResponse<Object>();
+  @Override
+  public Object beforeBodyWrite(
+      Object body,
+      MethodParameter returnType,
+      MediaType selectedContentType,
+      Class selectedConverterType,
+      ServerHttpRequest request,
+      ServerHttpResponse response) {
+    HttpServletResponse servletResponse = ((ServletServerHttpResponse) response).getServletResponse();
+    int status = servletResponse.getStatus();
+
+    RestResponse<Object> res = new RestResponse<Object>();
     res.setStatusCode(status);
 
     if (body instanceof String) {
@@ -29,20 +41,14 @@ public class FormatRestResponse implements ResponseBodyAdvice<Object> {
     }
 
     if (status >= 400) {
-      // case error
       return body;
-
     } else {
       res.setData(body);
-      res.setMessage("Success");
+      ApiMessage message = returnType.getMethodAnnotation(ApiMessage.class);
+      res.setMessage(message != null ? message.value() : "CALL API SUCCESS");
     }
 
     return res;
-  }
-
-  @Override
-  public boolean supports(MethodParameter returnType, Class converterType) {
-    return true;
   }
 
 }

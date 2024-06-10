@@ -23,6 +23,7 @@ import com.example.jobhunter.model.User;
 import com.example.jobhunter.model.dto.ResultPaginationDTO;
 import com.example.jobhunter.service.UserService;
 import com.example.jobhunter.service.error.IdInvalidException;
+import com.example.jobhunter.util.annotation.ApiMessage;
 import com.turkraft.springfilter.boot.Filter;
 
 import lombok.AllArgsConstructor;
@@ -34,6 +35,7 @@ public class UserController {
   private final UserService userService;
   private final PasswordEncoder passwordEncoder;
 
+  @ApiMessage("Get all users")
   @GetMapping
   public ResponseEntity<ResultPaginationDTO> getUsers(
       @Filter Specification<User> spec,
