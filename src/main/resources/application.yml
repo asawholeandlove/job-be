@@ -29,4 +29,5 @@ spring:
 # Cấu hình JWT
 jwt:
   secret: ODcxODJlOGI4YTdhZWNlYzE4NmRhNzQwYzQ4ZmIxOTQzODMzZDcxOWQ2OGVlNTk5MjY0MTcxNTc3YTcyZmIzN2I0YmI4NmI1ZDU2NDU4YzUxZjI0MDMwM2E5MDI4YWUYTIyMWQ5ZDNhODBhMmNhZjFkM2VlZWRhN2Y4ZWVlOTk=
-  expiration: 8640000
+  access-expiration: 8640000
+  refresh-expiration: 86400000

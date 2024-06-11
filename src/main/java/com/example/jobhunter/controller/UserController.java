@@ -26,6 +26,7 @@ import com.example.jobhunter.service.error.IdInvalidException;
 import com.example.jobhunter.util.annotation.ApiMessage;
 import com.turkraft.springfilter.boot.Filter;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -50,10 +51,16 @@ public class UserController {
   }
 
   @PostMapping
-  public ResponseEntity<User> createUser(@RequestBody User user) {
+  public ResponseEntity<User> createUser(@Valid @RequestBody User user) throws IdInvalidException {
+    var email = user.getEmail();
+    if (userService.getUserByEmail(email) != null) {
+      throw new IdInvalidException("Email already exists");
+    }
+
     var hashPassword = passwordEncoder.encode(user.getPassword());
     user.setPassword(hashPassword);
     var newUser = userService.createUser(user);
+    newUser.setPassword(null);
     return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
   }
 

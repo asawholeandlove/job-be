@@ -5,8 +5,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-// @NoArgsConstructor
-// @AllArgsConstructor
+
 public class ResLoginDTO {
   private String accessToken;
+  private UserInfo user;
+
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class UserInfo {
+    private long id;
+    private String email;
+    private String name;
+  }
 }

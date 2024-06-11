@@ -17,38 +17,59 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
+import com.example.jobhunter.model.dto.ResLoginDTO;
+
 @Service
 public class SecurityUtil {
-  private final JwtEncoder jwtEncoder;
+    private final JwtEncoder jwtEncoder;
 
-  public SecurityUtil(JwtEncoder jwtEncoder) {
-    this.jwtEncoder = jwtEncoder;
-  }
+    public SecurityUtil(JwtEncoder jwtEncoder) {
+        this.jwtEncoder = jwtEncoder;
+    }
 
-  public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
+    public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
 
-  @Value("${jwt.secret}")
-  private String jwtKey;
+    @Value("${jwt.secret}")
+    private String jwtKey;
 
-  @Value("${jwt.expiration}")
-  private long jwtExpiration;
+    @Value("${jwt.access-expiration}")
+    private long accessTokenExpiration;
 
-  public String createToken(Authentication authentication) {
-    Instant now = Instant.now();
-    Instant validity = now.plus(this.jwtExpiration, ChronoUnit.SECONDS);
+    @Value("${jwt.refresh-expiration}")
+    private long refreshTokenExpiration;
+
+    public String createAccessToken(Authentication authentication, ResLoginDTO.UserInfo resLogin) {
+        Instant now = Instant.now();
+        Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
 
     // @formatter:off
       JwtClaimsSet claims = JwtClaimsSet.builder()
           .issuedAt(now)
           .expiresAt(validity)
           .subject(authentication.getName())
-          .claim("hoidanit", authentication)
+          .claim("user", resLogin)
           .build();
 
       JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
       return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
 
-  }
+    }
+
+    public String createRefreshToken(String email, ResLoginDTO resLogin) {
+        Instant now = Instant.now();
+        Instant validity = now.plus(this.refreshTokenExpiration, ChronoUnit.SECONDS);
+
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+            .issuedAt(now)
+            .expiresAt(validity)
+            .subject(email)
+            .claim("user", resLogin.getUser())
+            .build();
+
+        JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
+        return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
+
+    }
 
   /**
      * Get the login of the current user.
