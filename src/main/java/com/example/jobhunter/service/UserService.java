@@ -9,13 +9,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.example.jobhunter.model.User;
-import com.example.jobhunter.model.dto.Meta;
-import com.example.jobhunter.model.dto.ResCreateUserDTO;
-import com.example.jobhunter.model.dto.ResUpdateUserDTO;
-import com.example.jobhunter.model.dto.ResUserDTO;
-import com.example.jobhunter.model.dto.ResultPaginationDTO;
+import com.example.jobhunter.model.response.ResCreateUserDTO;
+import com.example.jobhunter.model.response.ResUpdateUserDTO;
+import com.example.jobhunter.model.response.ResUserDTO;
+import com.example.jobhunter.model.response.ResultPaginationDTO;
 import com.example.jobhunter.repo.UserRepo;
-import com.example.jobhunter.service.error.IdInvalidException;
 
 import lombok.AllArgsConstructor;
 
@@ -35,7 +33,7 @@ public class UserService {
   public ResultPaginationDTO getAllUsers(Specification<User> spec, Pageable pageable) {
     Page<User> pageUser = this.userRepo.findAll(spec, pageable);
     ResultPaginationDTO rs = new ResultPaginationDTO();
-    Meta mt = new Meta();
+    ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
 
     mt.setPage(pageable.getPageNumber() + 1);
     mt.setPageSize(pageable.getPageSize());

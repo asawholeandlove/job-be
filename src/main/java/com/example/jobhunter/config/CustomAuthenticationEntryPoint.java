@@ -1,6 +1,6 @@
 package com.example.jobhunter.config;
 
-import com.example.jobhunter.model.RestResponse;
+import com.example.jobhunter.model.response.RestResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

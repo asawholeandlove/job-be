@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.example.jobhunter.model.dto.ResLoginDTO;
+import com.example.jobhunter.model.response.ResLoginDTO;
 import com.nimbusds.jose.util.Base64;
 
 @Service

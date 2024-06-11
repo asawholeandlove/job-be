@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.jobhunter.model.User;
-import com.example.jobhunter.model.dto.ResultPaginationDTO;
+import com.example.jobhunter.model.response.ResultPaginationDTO;
 import com.example.jobhunter.service.UserService;
 import com.example.jobhunter.service.error.IdInvalidException;
 import com.example.jobhunter.util.annotation.ApiMessage;

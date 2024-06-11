@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.jobhunter.model.Company;
-import com.example.jobhunter.model.dto.ResultPaginationDTO;
+import com.example.jobhunter.model.response.ResultPaginationDTO;
 import com.example.jobhunter.service.CompanyService;
 import com.turkraft.springfilter.boot.Filter;
 

@@ -1,4 +1,4 @@
-package com.example.jobhunter.model.dto;
+package com.example.jobhunter.model.response;
 
 import java.time.Instant;
 
@@ -9,12 +9,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ResCreateUserDTO {
+public class ResUpdateUserDTO {
     private long id;
     private String name;
-    private String email;
     private GenderEnum gender;
     private String address;
     private int age;
-    private Instant createdAt;
+    private Instant updatedAt;
 }

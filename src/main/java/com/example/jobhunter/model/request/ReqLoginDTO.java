@@ -1,9 +1,10 @@
-package com.example.jobhunter.model.dto;
+package com.example.jobhunter.model.request;
 
 import lombok.Data;
 
 @Data
-public class LoginDTO {
+public class ReqLoginDTO {
   private String username;
   private String password;
+
 }

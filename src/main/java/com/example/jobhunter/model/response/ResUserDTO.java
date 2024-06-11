@@ -1,4 +1,4 @@
-package com.example.jobhunter.model.dto;
+package com.example.jobhunter.model.response;
 
 import java.time.Instant;
 
