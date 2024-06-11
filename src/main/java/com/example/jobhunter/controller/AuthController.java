@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.jobhunter.model.dto.LoginDTO;
 import com.example.jobhunter.model.dto.ResLoginDTO;
 import com.example.jobhunter.service.UserService;
+import com.example.jobhunter.service.error.IdInvalidException;
 import com.example.jobhunter.util.SecurityUtil;
 import com.example.jobhunter.util.annotation.ApiMessage;
 
@@ -54,7 +56,7 @@ public class AuthController {
     var userInfo = new ResLoginDTO.UserInfo(currentUser.getId(), currentUser.getEmail(), currentUser.getName());
     res.setUser(userInfo);
 
-    String access_token = this.securityUtil.createAccessToken(authentication, res.getUser());
+    String access_token = this.securityUtil.createAccessToken(authentication.getName(), res.getUser());
 
     res.setAccessToken(access_token);
 
@@ -85,5 +87,42 @@ public class AuthController {
     }
 
     return ResponseEntity.ok(userInfo);
+  }
+
+  @GetMapping("/auth/refresh")
+  @ApiMessage("Refresh access token")
+  public ResponseEntity<ResLoginDTO> refresh(
+      @CookieValue(name = "refresh_token") String refresh_token) throws IdInvalidException {
+
+    var decodedToken = this.securityUtil.checkValidRefreshToken(refresh_token);
+
+    var email = decodedToken.getSubject();
+
+    var currentUser = this.userService.getUserByRefreshTokenAndEmail(refresh_token, email);
+
+    if (currentUser == null) {
+      throw new IdInvalidException("refresh token không hợp lệ");
+    }
+
+    ResLoginDTO res = new ResLoginDTO();
+
+    var userInfo = new ResLoginDTO.UserInfo(currentUser.getId(), currentUser.getEmail(), currentUser.getName());
+    res.setUser(userInfo);
+
+    String access_token = this.securityUtil.createAccessToken(email, res.getUser());
+
+    res.setAccessToken(access_token);
+
+    // create a refresh token
+    String newRefreshToken = this.securityUtil.createRefreshToken(email, res);
+
+    // update user's refresh token
+    this.userService.updateRefreshToken(email, newRefreshToken);
+
+    // Set cookies
+    var resCookies = ResponseCookie.from("refresh_token", newRefreshToken).httpOnly(true).secure(true).path("/")
+        .maxAge(refreshTokenExpiration).build();
+
+    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, resCookies.toString(), null).body(res);
   }
 }

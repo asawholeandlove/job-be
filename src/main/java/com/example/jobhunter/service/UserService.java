@@ -128,4 +128,8 @@ public class UserService {
       this.userRepo.save(user);
     }
   }
+
+  public User getUserByRefreshTokenAndEmail(String refreshToken, String email) {
+    return this.userRepo.findByRefreshTokenAndEmail(refreshToken, email);
+  }
 }

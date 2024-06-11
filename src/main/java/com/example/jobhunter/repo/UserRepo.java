@@ -7,4 +7,6 @@ import com.example.jobhunter.model.User;
 
 public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
   User findByEmail(String email);
+
+  User findByRefreshTokenAndEmail(String refreshToken, String email);
 }
