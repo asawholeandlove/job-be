@@ -1,4 +1,4 @@
-package com.example.jobhunter.model;
+package com.example.jobhunter.model.response;
 
 import lombok.Data;
 
