@@ -125,4 +125,18 @@ public class AuthController {
 
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, resCookies.toString(), null).body(res);
   }
+
+  @PostMapping("/auth/logout")
+  @ApiMessage("Logout")
+  public ResponseEntity<Void> logout() {
+    var email = SecurityUtil.getCurrentUserLogin().orElse("");
+    this.userService.updateRefreshToken(email, null);
+
+    // remove cookies
+    var resCookies = ResponseCookie.from("refresh_token", null).httpOnly(true).secure(true).path("/").maxAge(0).build();
+
+    return ResponseEntity.ok()
+        .header(HttpHeaders.SET_COOKIE, resCookies.toString())
+        .build();
+  }
 }
