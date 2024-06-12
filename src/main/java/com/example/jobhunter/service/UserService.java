@@ -21,8 +21,15 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class UserService {
   private final UserRepo userRepo;
+  private final CompanyService companyService;
 
   public User createUser(User user) {
+    // check company
+    if (user.getCompany() != null) {
+      var company = this.companyService.findById(user.getCompany().getId());
+      user.setCompany(company);
+    }
+
     return userRepo.save(user);
   }
 
@@ -53,7 +60,9 @@ public class UserService {
             item.getAddress(),
             item.getAge(),
             item.getUpdatedAt(),
-            item.getCreatedAt()))
+            item.getCreatedAt(),
+            new ResUserDTO.CompanyUser(item.getCompany() != null ? item.getCompany().getId() : 0,
+                item.getCompany() != null ? item.getCompany().getName() : "")))
         .collect(Collectors.toList());
 
     rs.setResult(listUser);
@@ -72,6 +81,12 @@ public class UserService {
       currentUser.setGender(reqUser.getGender());
       currentUser.setAge(reqUser.getAge());
       currentUser.setName(reqUser.getName());
+
+      if (reqUser.getCompany() != null) {
+        var company = this.companyService.findById(reqUser.getCompany().getId());
+
+        currentUser.setCompany(company);
+      }
 
       // update
       currentUser = this.userRepo.save(currentUser);
@@ -92,7 +107,16 @@ public class UserService {
     res.setCreatedAt(user.getCreatedAt());
     res.setGender(user.getGender());
     res.setAddress(user.getAddress());
+
+    if (user.getCompany() != null) {
+      ResCreateUserDTO.CompanyUser companyUser = new ResCreateUserDTO.CompanyUser();
+      companyUser.setId(user.getCompany().getId());
+      companyUser.setName(user.getCompany().getName());
+      res.setCompany(companyUser);
+    }
+
     return res;
+
   }
 
   public ResUpdateUserDTO convertToResUpdateUserDTO(User user) {
@@ -108,6 +132,13 @@ public class UserService {
 
   public ResUserDTO convertToResUserDTO(User user) {
     ResUserDTO res = new ResUserDTO();
+    if (user.getCompany() != null) {
+      ResUserDTO.CompanyUser companyUser = new ResUserDTO.CompanyUser();
+      companyUser.setId(user.getCompany().getId());
+      companyUser.setName(user.getCompany().getName());
+      res.setCompany(companyUser);
+    }
+
     res.setId(user.getId());
     res.setEmail(user.getEmail());
     res.setName(user.getName());

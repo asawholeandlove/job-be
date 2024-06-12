@@ -4,6 +4,7 @@ import java.time.Instant;
 
 import com.example.jobhunter.util.constant.GenderEnum;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,4 +18,11 @@ public class ResCreateUserDTO {
     private String address;
     private int age;
     private Instant createdAt;
+    private CompanyUser company;
+
+    @Data
+    public static class CompanyUser {
+        private long id;
+        private String name;
+    }
 }

@@ -9,6 +9,7 @@ import com.example.jobhunter.model.Company;
 import com.example.jobhunter.model.User;
 import com.example.jobhunter.model.response.ResultPaginationDTO;
 import com.example.jobhunter.repo.CompanyRepo;
+import com.example.jobhunter.repo.UserRepo;
 
 import lombok.AllArgsConstructor;
 
@@ -18,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CompanyService {
   private final CompanyRepo companyRepo;
+  private final UserRepo userRepo;
 
   // Get all companies with pagination
   public ResultPaginationDTO getCompanies(Specification<Company> spec, Pageable pageable) {
@@ -37,13 +39,24 @@ public class CompanyService {
 
   }
 
+  // Get a company by id
+  public Company findById(Long id) {
+    return companyRepo.findById(id).orElse(null);
+  }
+
   // Create a new company
   public Company createCompany(Company company) {
     return companyRepo.save(company);
   }
 
   public void deleteCompany(Long id) {
-    companyRepo.deleteById(id);
+    var comOptional = this.companyRepo.findById(id);
+    if (comOptional.isPresent()) {
+      var company = comOptional.get();
+      var users = company.getUsers();
+      this.userRepo.deleteAll(users);
+    }
+    this.companyRepo.deleteById(id);
   }
 
   public Company updateCompany(Long id, Company c) {

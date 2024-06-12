@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.jobhunter.model.User;
+import com.example.jobhunter.model.response.ResCreateUserDTO;
+import com.example.jobhunter.model.response.ResUserDTO;
 import com.example.jobhunter.model.response.ResultPaginationDTO;
 import com.example.jobhunter.service.UserService;
 import com.example.jobhunter.service.error.IdInvalidException;
@@ -46,12 +48,13 @@ public class UserController {
   }
 
   @GetMapping("/{id}")
-  public User getUserById(@PathVariable Long id) {
-    return userService.getUserById(id);
+  public ResponseEntity<ResUserDTO> getUserById(@PathVariable Long id) {
+    var user = userService.getUserById(id);
+    return ResponseEntity.status(HttpStatus.OK).body(this.userService.convertToResUserDTO(user));
   }
 
   @PostMapping
-  public ResponseEntity<User> createUser(@Valid @RequestBody User user) throws IdInvalidException {
+  public ResponseEntity<ResCreateUserDTO> createUser(@Valid @RequestBody User user) throws IdInvalidException {
     var email = user.getEmail();
     if (userService.getUserByEmail(email) != null) {
       throw new IdInvalidException("Email already exists");
@@ -61,13 +64,19 @@ public class UserController {
     user.setPassword(hashPassword);
     var newUser = userService.createUser(user);
     newUser.setPassword(null);
-    return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+    return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.convertToResCreateUserDTO(user));
   }
 
   @PutMapping("/{id}")
-  public String updateUser(@PathVariable Long id, @RequestBody User user) {
-    userService.updateUser(id, user);
-    return "User updated: ";
+  public ResponseEntity<ResUserDTO> updateUser(@PathVariable Long id, @RequestBody User user)
+      throws IdInvalidException {
+    var updatedUser = userService.updateUser(id, user);
+
+    if (updatedUser == null) {
+      throw new IdInvalidException("User not found");
+    }
+
+    return ResponseEntity.status(HttpStatus.OK).body(this.userService.convertToResUserDTO(updatedUser));
   }
 
   @DeleteMapping("/{id}")
